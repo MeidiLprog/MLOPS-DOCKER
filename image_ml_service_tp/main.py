@@ -68,8 +68,8 @@ def trainModel():
    y_prob = model.predict_proba(X_test)[:,1]
    
    results = {
-      "CV_AUC_MEAN" : float(cv.mean()),
-      "CV_AUC_VAR" : float(cv.std()),
+      "CV_AUC_MEAN" : float(scores.mean()),
+      "CV_AUC_VAR" : float(scores.std()),
       "test_accucary" : float(accuracy := accuracy_score(y_test,y_pred)),
       "test_precision" : float(precision := precision_score(y_test,y_pred)),
       "test_recall" : float(recall := recall_score(y_test,y_pred)), 
