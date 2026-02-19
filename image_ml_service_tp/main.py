@@ -4,6 +4,7 @@ from flask import Flask, jsonify
 import requests as req
 from datetime import datetime
 import numpy as np
+import time as t
 #SKLEARN imports
 
 from sklearn.datasets import make_classification
@@ -19,6 +20,14 @@ app = Flask(__name__)
 Simple random number generator, one list, and assigning a random value to a <td> element in html
 """
 
+def timer(func):
+   def wrapper(*args,**kwargs):
+    start = t.time()
+    fn = func(*args,**kwargs)
+    end = t.time() - start
+    f"Time consumed {end:.3f}s\n"
+    return fn
+   return wrapper
 #root directory
 @app.route('/')
 def randitup() -> str:
