@@ -53,7 +53,7 @@ trained = None
 
 @app.route('/train')
 def trainModel():
-   
+   global accuracy,precision,recall
 
    X,y = make_classification(n_samples=2000,n_features=20,n_informative=10,flip_y=0.02,random_state=42)
 
@@ -70,9 +70,9 @@ def trainModel():
    results = {
       "CV_AUC_MEAN" : float(cv.mean()),
       "CV_AUC_VAR" : float(cv.std()),
-      "test_accucary" : float(accuracy_score(y_test,y_pred)),
-      "test_precision" : float(precision_score(y_test,y_pred)),
-      "test_recall" : float(recall_score(y_test,y_pred)), 
+      "test_accucary" : float(accuracy := accuracy_score(y_test,y_pred)),
+      "test_precision" : float(precision := precision_score(y_test,y_pred)),
+      "test_recall" : float(recall := recall_score(y_test,y_pred)), 
       "test_auc" : float(roc_auc_score(y_test,y_prob)),
    }
    
