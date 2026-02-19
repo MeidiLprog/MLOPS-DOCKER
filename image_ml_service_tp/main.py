@@ -10,7 +10,7 @@ from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score,recall_score,precision_score
+from sklearn.metrics import accuracy_score,recall_score,precision_score,roc_auc_score
 
 
 app = Flask(__name__)
@@ -44,7 +44,7 @@ trained = None
 
 @app.route('/train')
 def trainModel():
-   global accuracy,precision,recall
+   
 
    X,y = make_classification(n_samples=2000,n_features=20,n_informative=10,flip_y=0.02,random_state=42)
 
@@ -52,9 +52,22 @@ def trainModel():
    cv = StratifiedKFold(n_splits=5,shuffle=True,random_state=42)
    model = RandomForestClassifier(n_estimators=100,random_state=42,n_jobs=-1)
    scores = cross_val_score(model,X_train,y_train,cv=cv,scoring="roc_auc")
-   print(f"AUC score mean: {scores.mean()} AUC score var: {scores.std()}\n")
-   print(f"Test score: {model.score(X_test,y_test)}")
+   
+   model.fit(X_train,y_train)
 
+   y_pred = model.predict(X_test)
+   y_prob = model.predict_proba(X_test)[:,1]
+   
+   results = {
+      "CV_AUC_MEAN" : float(cv.mean()),
+      "CV_AUC_VAR" : float(cv.std()),
+      "test_accucary" : float(accuracy_score(y_test,y_pred)),
+      "test_precision" : float(precision_score(y_test,y_pred)),
+      "test_recall" : float(recall_score(y_test,y_pred)), 
+      "test_auc" : float(roc_auc_score(y_test,y_prob)),
+   }
+   
+   return results
 @app.route('/results')
 def results():
    if accuracy is None:
