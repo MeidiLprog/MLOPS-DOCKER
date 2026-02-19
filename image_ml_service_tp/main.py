@@ -8,7 +8,7 @@ import time as t
 #SKLEARN imports
 
 from sklearn.datasets import make_classification
-from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
+from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score,GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score,recall_score,precision_score,roc_auc_score
@@ -61,20 +61,38 @@ def trainModel():
    cv = StratifiedKFold(n_splits=5,shuffle=True,random_state=42)
    model = {
       "Logreg" : LogisticRegression(max_iter=1000),
-      "RF" : RandomForestClassifier(n_estimators=200,n_jobs=-1,random_state=42)
+      "RF" : RandomForestClassifier(n_estimators=200,n_jobs=-1,random_state=42,max_depth=20)
    }  
    scores : dict = {}
    for name,val in model.items():
       scores_cv = cross_val_score(val,X_train,y_train,cv=cv)
       #adding mean to dictionnary to automatically compare and gridsearch it later on
       mean_sc = scores_cv.mean()
+      #dictionnary to store the result
       scores[name] = mean_sc
 
       print(f"{name} : {scores.mean():.4f}\n")
-
+    
+    
+   best_mod = max(scores,key=scores.get)
+   print(f"The best model was{best_mod}\n")
+   #using the name associated to the value to retrieve the model Object
+   model_to_use = model[best_mod] 
    
+   #once retrieved it is time to carry out a grid search
 
-   model.fit(X_train,y_train)
+   param_grids = {
+    "Logreg": {
+        "C": [0.1, 1, 10]
+    },
+    "RF": {
+        "n_estimators": [100, 200],
+        "max_depth": [None, 5, 10]
+    }
+}
+   grid = GridSearchCV(estimator=model_to_use,param_grid=param_grids[best_mod],cv=cv,n_jobs=-1)
+   
+   grid.fit(X_train,y_train)
    
    y_pred = model.predict(X_test)
    y_prob = model.predict_proba(X_test)[:,1]
