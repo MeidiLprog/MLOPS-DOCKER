@@ -4,11 +4,17 @@ ARG BUILD_DATE="20226-19-02"
 ARG VERSION=1.0.0
 ARG REQUIREMENTS="requirements.txt"
 
+#OCI LABELS quite useful for CI/CD docker inspect
 LABEL org.opencontainers.authors="Lefki Meidi <m.lef3105@gmail.com>"
 LABEL org.opencontainers.image.version=$VERSION
 LABEL org.opencontainers.image.created=$BUILD_DATE
 LABEL org.opencontainers.source="https://github.com/MeidiLprog/MLOPS-DOCKER.git"
 LABEL org.opencontainers.description="Over complicating things for my own amusement"
+
+#ENV VARGS
+#1: Prevent the creation of .pyc files(optimize space)
+#2: FORCES LOGS TO BE DISPLAYED
+#3: Deactivate pip cache to reduce the image even further
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -16,23 +22,24 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 
 RUN apk add --no-cache wget
+#INSTALL SYSTEM DEPENDENCIES
 RUN apk add --no-cache build-base libffi-dev
-
+#WORK DIRECTORY
 WORKDIR /app
-
+#COPY THE DEPENDENCIES FIRST(NOT TO ALTER)
 COPY ${REQUIREMENTS} .
 
-#FIX to build the requirements
+#FIX to build the requirements ALSO allow legacy code to run
 RUN python -m pip install --no-cache-dir --upgrade pip setuptools wheel
-
+#WE DO NOT STOCK THE WHEELS so we reduce the image
 RUN python -m pip install --no-cache-dir -r ${REQUIREMENTS}
 COPY . .
-
+#EXPOSE only serves as an indicator
 EXPOSE 5000
-
+#QUITE EXPLICIT
 HEALTHCHECK --interval=30s --timeout=5s --start-period=3s --retries=3 \
         CMD wget -qO- http://localhost:5000/ || exit 1
-
+#signal processing
 CMD ["python","main.py"]
 
 

@@ -34,9 +34,10 @@ def timer(func):
 #root directory
 @app.route('/')
 def randitup() -> str:
+   
    nb  = [(r.randint(1,1000) % 10) for _ in range(10)]
    
-   html = "<html><body><table>"
+   html = "<html><body><h1>VOLUME VERSION</h1><table>"
    for i in nb:
       html += f"<tr><td>{i}</td></tr>"
    html += "</body></html>"
@@ -175,3 +176,4 @@ def results():
 
 if __name__ == "__main__":
    app.run(host='0.0.0.0',debug=True,port=5000)
+   
