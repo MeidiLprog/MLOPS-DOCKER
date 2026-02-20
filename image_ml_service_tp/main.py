@@ -1,3 +1,6 @@
+#FIRST SCRIPT + dockerfile IMG1 associated 
+#Simple ML classification comparaison RF/LGREG
+
 import os
 import random as r
 from flask import Flask, jsonify
@@ -45,15 +48,17 @@ def randitup() -> str:
    return html
 
 #global variables needed for the resultats
-accuracy : float = None
-precision : float = None
-recall : float = None
+accuracy: float | None = None
+precision: float | None = None
+recall: float | None = None
+auc: float | None = None
+trained: datetime | None = None
+results: dict | None = None
 
-trained = None
 
 @app.route('/train')
 def trainModel():
-   global accuracy,precision,recall
+   global accuracy, precision, recall, auc, trained, results
 
    X,y = make_classification(n_samples=2000,n_features=20,n_informative=10,flip_y=0.02,random_state=42)
    
@@ -84,7 +89,9 @@ def trainModel():
 
    param_grids = {
     "Logreg": {
-        "C": [0.1, 1, 10]
+        "penalty" : ["l1","l2"],
+        "C": [0.1, 1, 10],
+        "solver" : ["liblinear"],
     },
     "RF": {
         "n_estimators": [100, 200],
@@ -100,6 +107,15 @@ def trainModel():
    y_pred = final_model.predict(X_test)
    y_prob = final_model.predict_proba(X_test)[:, 1]
 
+   accuracy = accuracy_score(y_test, y_pred)
+   precision = precision_score(y_test, y_pred)
+   recall = recall_score(y_test, y_pred)
+   auc = roc_auc_score(y_test, y_prob)
+
+   trained = datetime.now()
+
+
+
 
 
    results = {
@@ -110,6 +126,7 @@ def trainModel():
       "accuracy": float(accuracy),
       "precision": float(precision),
       "recall": float(recall),
+      "auc" : float(auc),
       "trained": trained.strftime("%Y-%m-%d %H:%M:%S")
     }
 
@@ -137,16 +154,24 @@ def trainModel():
 
 @app.route('/results')
 def results():
+   global results
    if accuracy is None:
       return "No model has been trained \n"
    
-   html += "<html><body>"
-   
+   html = "<html><body>"
+   html += "<h1>Model results: </h1><table border='1'>"
+   html += "<tr><th>Metric</th><th>Values</th></tr>"
+   for k,v in results.items():
+      
+      if isinstance(v,float):
+         v = f"{v:.3f}"
+      html += f"<tr><td>{k}</td><td>{v}</td></tr>"
 
-
+   html += "</table>"
+   html += '<br><a href="/">Back</a>'
    html += "</body></html>"
 
-
+   return html
 
 if __name__ == "__main__":
    app.run(host='0.0.0.0',debug=True,port=5000)
