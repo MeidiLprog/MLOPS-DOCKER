@@ -71,7 +71,8 @@ def trainModel():
       #dictionnary to store the result
       scores[name] = mean_sc
 
-      print(f"{name} : {scores.mean():.4f}\n")
+      print(f"{name} : {mean_sc:.4f}")
+
     
     
    best_mod = max(scores,key=scores.get)
@@ -94,36 +95,56 @@ def trainModel():
    
    grid.fit(X_train,y_train)
    
-   y_pred = model.predict(X_test)
-   y_prob = model.predict_proba(X_test)[:,1]
-   
+   final_model = grid.best_estimator_
+
+   y_pred = final_model.predict(X_test)
+   y_prob = final_model.predict_proba(X_test)[:, 1]
+
+
+
    results = {
-      "CV_AUC_MEAN" : float(scores.mean()),
-      "CV_AUC_VAR" : float(scores.std()),
-      "test_accucary" : float(accuracy := accuracy_score(y_test,y_pred)),
-      "test_precision" : float(precision := precision_score(y_test,y_pred)),
-      "test_recall" : float(recall := recall_score(y_test,y_pred)), 
-      "test_auc" : float(roc_auc_score(y_test,y_prob)),
-   }
-   
+      "best_model": best_mod,
+      "best_params": grid.best_params_,
+      "cv_mean": float(grid.best_score_),
+      "cv_std": float(grid.cv_results_['std_test_score'][grid.best_index_]),
+      "accuracy": float(accuracy),
+      "precision": float(precision),
+      "recall": float(recall),
+      "trained": trained.strftime("%Y-%m-%d %H:%M:%S")
+    }
+
    return f"""
+    <html><body>
+    <h1>Training complete</h1>
+
+    <h2>Best Model: {results['best_model']}</h2>
+    <p>Best Parameterss: {results['best_params']}</p>
+
+    <h3>Cross-Validation(mn gridsearch)</h3>
+    <p>Mean CV score: {results['cv_mean']:.3f}</p>
+    <p>Std CV score: {results['cv_std']:.3f}</p>
+
+    <h3>Test Metrics</h3>
+    <p>Accuracy: {results['accuracy']:.3f}</p>
+    <p>Precision: {results['precision']:.3f}</p>
+    <p>Recall: {results['recall']:.3f}</p>
+    <p>AUC: {results['auc']:.3f}</p>
+
+    <br><a href="/results">View stored results</a>
+    </body></html>
+    """
 
 
-
-   """
 @app.route('/results')
 def results():
    if accuracy is None:
       return "No model has been trained \n"
-   return f"""
-   <html><body>
-      <h1>Results</h1>
-      <p>Accuracy: {accuracy:.3f}</p>
-      <p>Precision: {precision:.3f}</p>
-      <p>Recall: {recall:.3f}</p>
-      <p>Timestamp: {trained:.3f}</p>
-   </body></html>
-   """
+   
+   html += "<html><body>"
+   
+
+
+   html += "</body></html>"
 
 
 
