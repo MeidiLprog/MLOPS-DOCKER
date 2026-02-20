@@ -1,11 +1,32 @@
+#API
+Flask
+gunicorn
 
-Flask==2.3.3
-sentence-transformers==2.2.2 
-transformers==4.35.0           
-torch==2.1.0                    
-umap-learn==0.5.3              
-scikit-learn==1.3.0            
-numpy==1.24.3
-pandas==2.0.3                   
+#Data manipulation
+numpy
+pandas
+scipy
 
-joblib==1.3.0	
+#NLP
+nltk
+spacy
+gensim
+transformers
+torch
+sentence-transformers
+textblob
+langdetect
+
+#Vectorizers & ML
+scikit-learn
+umap-learn
+hdbscan
+
+
+#Visu
+matplotlib
+
+#Utils
+joblib
+python-dotenv
+requests
