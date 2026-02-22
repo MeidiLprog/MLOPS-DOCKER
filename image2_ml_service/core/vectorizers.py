@@ -29,9 +29,9 @@ class Vectorize:
 
         if not self.model == None:
             X = self.model.transform(text)
-            return X.ndarray()
+            return X.toarray()
         else:
             raise ValueError("Model cannot be none \n")
 
-    
+
 
