@@ -60,8 +60,13 @@ results: dict | None = None
 @app.route('/train')
 def trainModel():
    global accuracy, precision, recall, auc, trained, results
-
+   #I used quite a lot of features to make data seem more real 10 informative features, a bit of noise thanks to flip_y
    X,y = make_classification(n_samples=2000,n_features=20,n_informative=10,flip_y=0.02,random_state=42)
+   #I meant to use a few strategies to process the data Stratified, then 
+   """
+   Then I stored the result of the model, to pick the right one and ran a gridsearch on it, launched 
+   the metrics and displayed in an HTML format the results
+   """
    
    X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2,random_state=42,stratify=y)
    cv = StratifiedKFold(n_splits=5,shuffle=True,random_state=42)
@@ -80,7 +85,7 @@ def trainModel():
       print(f"{name} : {mean_sc:.4f}")
 
     
-    
+   #make a quick comparaison to check what model is the most appropriate
    best_mod = max(scores,key=scores.get)
    print(f"The best model was{best_mod}\n")
    #using the name associated to the value to retrieve the model Object
@@ -118,7 +123,7 @@ def trainModel():
 
 
 
-
+   
    results = {
       "best_model": best_mod,
       "best_params": grid.best_params_,
