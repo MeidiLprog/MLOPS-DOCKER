@@ -11,8 +11,8 @@ DEFAULT_LANGUAGE = "en"
 
 #Models spacy shall us
 SPACY_MODELS = {
-    "en" : "en_core_web_ms",
-    "fr" : "fr_core_web_ms",
+    "en" : "en_core_web_sm",
+    "fr" : "fr_core_web_sm",
 }
 
 #Directories
