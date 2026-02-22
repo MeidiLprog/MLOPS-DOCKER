@@ -24,8 +24,14 @@ class Vectorize:
         X = self.model.fit_transform(text)
         self.features_names = self.model.get_feature_names_out()
         return X.toarray()
-    
-    
-    
 
+    def transform(self,text : List[str]) -> np.ndarray:
+
+        if not self.model == None:
+            X = self.model.transform(text)
+            return X.ndarray()
+        else:
+            raise ValueError("Model cannot be none \n")
+
+    
 
