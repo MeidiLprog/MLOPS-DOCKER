@@ -35,7 +35,7 @@ RUN python -m pip install --no-cache-dir --upgrade pip setuptools wheel
 RUN python -m pip install --no-cache-dir -r ${REQUIREMENTS}
 COPY . .
 #EXPOSE only serves as an indicator
-EXPOSE 5000
+EXPOSE 5001
 #QUITE EXPLICIT
 HEALTHCHECK --interval=30s --timeout=5s --start-period=3s --retries=3 \
         CMD wget -qO- http://localhost:5000/ || exit 1

@@ -1,0 +1,9 @@
+version : "3.8"
+
+
+services:
+  gateway:
+    build: ./image_ml_service_tp
+    ports:
+      - "80:5000"
+      
