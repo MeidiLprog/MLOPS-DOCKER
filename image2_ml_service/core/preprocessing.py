@@ -59,3 +59,19 @@ class textPreprocess:
             return detect(text)
         except:
             return None
+    
+    #process everything clean data -> detect language -> drop na lines(for better prediction)
+    #return the rest
+    def processData(self, colum : str = None):
+        if not isinstance(colum,pd.Series) or (colum == None):
+            raise ValueError("An error occurred \n")
+        else:
+            try:
+                self.data['cleaned_data'] = self.data[colum].apply(self.serieProcess)
+                self.lang['language'] = self.data[colum].apply(self.langDetection)
+                self.data = self.data.dropna(subset=['cleaned_data'])
+                return self.data
+            except:
+                print("An error occurred \n")
+                return False
+        
