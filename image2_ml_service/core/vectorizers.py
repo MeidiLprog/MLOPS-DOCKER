@@ -12,7 +12,7 @@ class Vectorize:
         self.method = method
         self.features_names = None #quite useful to retrieve the words
 
-
+    
     def fit_transform(self, text : List[str]) -> np.ndarray:
         
         if self.method == "tfidf":
